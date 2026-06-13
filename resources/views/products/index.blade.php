@@ -1,159 +1,827 @@
+{{-- resources/views/products/index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Products | StockOps')
+@section('title', 'Products Management')
 
 @section('content')
-<div class="space-y-8">
-    <!-- Page header -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Products</h1>
-            <p class="mt-1 text-sm text-slate-500 font-medium">Manage your inventory, prices, and stock levels.</p>
-        </div>
-        <div>
-            <a href="{{ route('products.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-100 hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-4.5 w-4.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                Add Product
-            </a>
-        </div>
-    </div>
-
-    <!-- Quick Stats Grid -->
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Stat 1 -->
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm flex items-center gap-4">
-            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
-            </span>
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Products</p>
-                <p class="text-2xl font-bold text-slate-900 mt-0.5">{{ $products->count() }}</p>
+<div class="products-page">
+    <div class="page-container">
+        {{-- Header Section --}}
+        <div class="page-header">
+            <div class="header-left">
+                <h1 class="page-title">
+                    <span class="title-icon">📦</span>
+                    Products Management
+                </h1>
+                <p class="page-subtitle">Manage your product inventory</p>
+            </div>
+            <div class="header-right">
+                <a href="{{ route('products.create') }}" class="btn-primary">
+                    <span class="btn-icon">+</span>
+                    Add New Product
+                </a>
             </div>
         </div>
 
-        <!-- Stat 2 -->
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm flex items-center gap-4">
-            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-            </span>
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Low Stock (≤10)</p>
-                <p class="text-2xl font-bold text-slate-900 mt-0.5">{{ $products->where('stock', '>', 0)->where('stock', '<=', 10)->count() }}</p>
-            </div>
-        </div>
-
-        <!-- Stat 3 -->
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm flex items-center gap-4">
-            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </span>
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Out of Stock</p>
-                <p class="text-2xl font-bold text-slate-900 mt-0.5">{{ $products->where('stock', 0)->count() }}</p>
-            </div>
-        </div>
-
-        <!-- Stat 4 -->
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm flex items-center gap-4">
-            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </span>
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Average Price</p>
-                <p class="text-2xl font-bold text-slate-900 mt-0.5">${{ number_format($products->avg('price'), 2) }}</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Products Table Card -->
-    <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-        @if($products->isEmpty())
-            <div class="py-16 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-slate-300">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
-                <h3 class="mt-4 text-sm font-semibold text-slate-900">No products found</h3>
-                <p class="mt-1.5 text-xs text-slate-500 font-medium">Get started by creating a new product.</p>
-                <div class="mt-6">
-                    <a href="{{ route('products.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition shadow-sm">
-                        Add Product
-                    </a>
+        {{-- Stats Cards --}}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <h3>Total Products</h3>
+                    <p></p>
                 </div>
             </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-left text-sm text-slate-500">
-                    <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 border-b border-slate-200">
-                        <tr>
-                            <th scope="col" class="px-6 py-4">Product Info</th>
-                            <th scope="col" class="px-6 py-4">Price</th>
-                            <th scope="col" class="px-6 py-4">Stock Status</th>
-                            <th scope="col" class="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach($products as $product)
-                            <tr class="hover:bg-slate-50/60 transition duration-150">
-                                <td class="px-6 py-4.5">
-                                    <div class="font-semibold text-slate-900">{{ $product->name }}</div>
-                                    @if($product->description)
-                                        <div class="mt-1 text-xs text-slate-400 max-w-sm truncate">{{ $product->description }}</div>
-                                    @else
-                                        <div class="mt-1 text-xs text-slate-350 italic">No description provided.</div>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4.5 font-medium text-slate-900">
-                                    ${{ number_format($product->price, 2) }}
-                                </td>
-                                <td class="px-6 py-4.5">
-                                    @if($product->stock == 0)
-                                        <span class="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-600/10">
-                                            Out of stock
-                                        </span>
-                                    @elseif($product->stock <= 10)
-                                        <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/10">
-                                            Low stock: {{ $product->stock }} left
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/10">
-                                            In stock: {{ $product->stock }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4.5 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('products.edit', $product->id) }}" class="rounded-lg p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/50 transition">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4.5 w-4.5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                                            </svg>
-                                        </a>
-                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="rounded-lg p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 transition">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4.5 w-4.5">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <h3>Total Value</h3>
+                    <p>${{ number_format($products->sum('price'), 2) }}</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <h3>Low Stock</h3>
+                    <p>{{ $products->where('stock', '<=', 10)->count() }}</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏷️</div>
+                <div class="stat-info">
+                    <h3>Categories</h3>
+                    <p>{{ \App\Models\Category::count() }}</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Filters Section --}}
+        <div class="filters-card">
+            <form method="GET" action="{{ route('products.index') }}" class="filters-form">
+                <div class="filter-group">
+                    <label for="category">
+                        <span class="filter-icon">🔍</span>
+                        Category
+                    </label>
+                    <select name="category" id="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                {{ $category->icon ?? '📁' }} {{ $category->name }}
+                            </option>
                         @endforeach
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="search">
+                        <span class="filter-icon">🔎</span>
+                        Search
+                    </label>
+                    <input type="text" name="search" id="search" class="filter-input" 
+                           placeholder="Search products..." value="{{ request('search') }}">
+                </div>
+
+                <div class="filter-group">
+                    <label for="sort">
+                        <span class="filter-icon">⚡</span>
+                        Sort by
+                    </label>
+                    <select name="sort" id="sort" class="filter-select">
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                        <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Name: A to Z</option>
+                        <option value="stock_asc" {{ request('sort') == 'stock_asc' ? 'selected' : '' }}>Stock: Low to High</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter">Apply Filters</button>
+                    @if(request('category') || request('search') || request('sort'))
+                        <a href="{{ route('products.index') }}" class="btn-reset">Reset</a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        {{-- Alerts --}}
+        @if(session('success'))
+            <div class="alert alert-success">
+                <span class="alert-icon">✅</span>
+                {{ session('success') }}
+                <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-error">
+                <span class="alert-icon">❌</span>
+                {{ session('error') }}
+                <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+        @endif
+
+        {{-- Products Table --}}
+        <div class="table-container">
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th class="col-id">ID</th>
+                        <th class="col-image">Image</th>
+                        <th class="col-name">Product</th>
+                        <th class="col-category">Category</th>
+                        <th class="col-price">Price</th>
+                        <th class="col-stock">Stock</th>
+                        <th class="col-date">Created</th>
+                        <th class="col-actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($products as $product)
+                        <tr class="product-row">
+                            <td class="col-id" data-label="ID">
+                                <span class="product-id">#{{ $product->id }}</span>
+                            </td>
+                            <td class="col-image" data-label="Image">
+                                <div class="product-image">
+                                    <img src="{{ $product->image ?? 'https://via.placeholder.com/50x50?text=No+Image' }}" 
+                                         alt="{{ $product->name }}"
+                                         onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'">
+                                </div>
+                            </td>
+                            <td class="col-name" data-label="Product">
+                                <div class="product-info">
+                                    <div class="product-name">{{ $product->name }}</div>
+                                    <div class="product-description">{{ Str::limit($product->description, 60) }}</div>
+                                </div>
+                            </td>
+                            <td class="col-category" data-label="Category">
+                                @if($product->category)
+                                    <span class="category-badge">
+                                        {{ $product->category->icon ?? '📦' }}
+                                        {{ $product->category->name }}
+                                    </span>
+                                @else
+                                    <span class="category-badge uncategorized">📁 Uncategorized</span>
+                                @endif
+                            </td>
+                            <td class="col-price" data-label="Price">
+                                <div class="price-container">
+                                    <span class="currency">$</span>
+                                    <span class="price-value">{{ number_format($product->price, 2) }}</span>
+                                </div>
+                            </td>
+                            <td class="col-stock" data-label="Stock">
+                                <div class="stock-container">
+                                    <span class="stock-badge {{ $product->stock > 10 ? 'stock-high' : ($product->stock > 0 ? 'stock-medium' : 'stock-out') }}">
+                                        @if($product->stock == 0)
+                                            Out of Stock
+                                        @elseif($product->stock <= 10)
+                                            Low Stock ({{ $product->stock }})
+                                        @else
+                                            In Stock ({{ $product->stock }})
+                                        @endif
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="col-date" data-label="Created">
+                                <div class="date-info">
+                                    <span class="date-day">{{ $product->created_at->format('d M Y') }}</span>
+                                    <span class="date-time">{{ $product->created_at->format('H:i') }}</span>
+                                </div>
+                            </td>
+                            <td class="col-actions" data-label="Actions">
+                                <div class="action-buttons">
+                                    <a href="{{ route('products.show', $product->id) }}" class="action-btn btn-view" title="View Product">
+                                        👁️
+                                    </a>
+                                    <a href="{{ route('products.edit', $product->id) }}" class="action-btn btn-edit" title="Edit Product">
+                                        ✏️
+                                    </a>
+                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="delete-form" 
+                                          onsubmit="return confirmDelete('{{ addslashes($product->name) }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="action-btn btn-delete" title="Delete Product">
+                                            🗑️
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <div class="empty-state-content">
+                                    <span class="empty-icon">📭</span>
+                                    <h3>No Products Found</h3>
+                                    <p>Get started by creating your first product</p>
+                                    <a href="{{ route('products.create') }}" class="btn-primary btn-sm">
+                                        + Add New Product
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        @if($products->hasPages())
+            <div class="pagination-wrapper">
+                {{ $products->appends(request()->query())->links() }}
             </div>
         @endif
     </div>
 </div>
+
+<style>
+    /* ========== GLOBAL STYLES ========== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .products-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    /* ========== HEADER SECTION ========== */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-left {
+        flex: 1;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .title-icon {
+        font-size: 2rem;
+    }
+
+    .page-subtitle {
+        color: #4a5568;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .btn-icon {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    /* ========== STATS CARDS ========== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+
+    .stat-info h3 {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-info p {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    /* ========== FILTERS SECTION ========== */
+    .filters-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .filters-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 180px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.85rem;
+    }
+
+    .filter-icon {
+        margin-right: 0.25rem;
+    }
+
+    .filter-select,
+    .filter-input {
+        width: 100%;
+        padding: 0.6rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-select:focus,
+    .filter-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-filter,
+    .btn-reset {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-filter {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-filter:hover {
+        background: #5a67d8;
+        transform: translateY(-1px);
+    }
+
+    .btn-reset {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-reset:hover {
+        background: #cbd5e0;
+    }
+
+    /* ========== ALERTS ========== */
+    .alert {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideDown 0.3s ease;
+        position: relative;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background: #c6f6d5;
+        color: #22543d;
+        border-left: 4px solid #38a169;
+    }
+
+    .alert-error {
+        background: #fed7d7;
+        color: #742a2a;
+        border-left: 4px solid #e53e3e;
+    }
+
+    .alert-icon {
+        font-size: 1.2rem;
+    }
+
+    .alert-close {
+        margin-left: auto;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.3s;
+    }
+
+    .alert-close:hover {
+        opacity: 1;
+    }
+
+    /* ========== TABLE STYLES ========== */
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow-x: auto;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .products-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .products-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .products-table th {
+        padding: 1rem;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: left;
+    }
+
+    .products-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    .product-row:hover {
+        background: #f7fafc;
+        transition: background 0.3s;
+    }
+
+    /* Column widths */
+    .col-id { width: 5%; }
+    .col-image { width: 8%; }
+    .col-name { width: 25%; }
+    .col-category { width: 12%; }
+    .col-price { width: 10%; }
+    .col-stock { width: 10%; }
+    .col-date { width: 12%; }
+    .col-actions { width: 10%; }
+
+    /* Product image */
+    .product-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-id {
+        font-weight: 600;
+        color: #4a5568;
+        font-family: monospace;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-description {
+        font-size: 0.8rem;
+        color: #718096;
+    }
+
+    /* Category badge */
+    .category-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: linear-gradient(135deg, #e9d8fd 0%, #d6bcfa 100%);
+        color: #553c9a;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .category-badge.uncategorized {
+        background: #e2e8f0;
+        color: #718096;
+    }
+
+    /* Price */
+    .price-container {
+        display: flex;
+        align-items: baseline;
+        gap: 0.15rem;
+    }
+
+    .currency {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #48bb78;
+    }
+
+    .price-value {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #2c7a2c;
+    }
+
+    /* Stock badge */
+    .stock-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .stock-high {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .stock-medium {
+        background: #feebc8;
+        color: #975a16;
+    }
+
+    .stock-out {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+
+    /* Date info */
+    .date-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .date-day {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .date-time {
+        font-size: 0.7rem;
+        color: #a0aec0;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem 0.6rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-view {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-view:hover {
+        background: #cbd5e0;
+        transform: scale(1.05);
+    }
+
+    .btn-edit {
+        background: #fefcbf;
+        color: #975a16;
+    }
+
+    .btn-edit:hover {
+        background: #fde68a;
+        transform: scale(1.05);
+    }
+
+    .btn-delete {
+        background: #fed7d7;
+        color: #c53030;
+    }
+
+    .btn-delete:hover {
+        background: #feb2b2;
+        transform: scale(1.05);
+    }
+
+    .delete-form {
+        display: inline;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 4rem !important;
+    }
+
+    .empty-state-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+    }
+
+    .empty-state-content h3 {
+        font-size: 1.5rem;
+        color: #2d3748;
+    }
+
+    .empty-state-content p {
+        color: #718096;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .pagination-wrapper nav {
+        display: inline-block;
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 0 1rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Mobile table view */
+        .products-table thead {
+            display: none;
+        }
+
+        .products-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .products-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .products-table td:before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 100px;
+        }
+
+        .products-table td:last-child {
+            border-bottom: none;
+        }
+
+        .action-buttons {
+            justify-content: flex-end;
+        }
+
+        .filter-group {
+            min-width: 100%;
+        }
+
+        .filter-actions {
+            width: 100%;
+        }
+
+        .btn-filter, .btn-reset {
+            flex: 1;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    function confirmDelete(productName) {
+        return confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`);
+    }
+</script>
 @endsection

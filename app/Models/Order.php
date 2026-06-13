@@ -17,4 +17,13 @@ class Order extends Model
     public function products(){
         return $this->belongsToMany(Product::class);
     }
+
+    public function calculateTotalPrice()
+    {
+        $total = 0;
+        foreach ($this->products as $product) {
+            $total += $product->price * $product->quantity;
+        }
+        return $total;
+    }
 }
