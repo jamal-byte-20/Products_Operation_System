@@ -11,6 +11,8 @@ class Product extends Model
         'description',
         'price',
         'stock',
+        'quantity',
+        'image',
     ];
     public function orders(){
         return $this->belongsToMany(Order::class);

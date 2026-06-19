@@ -56,6 +56,43 @@ class ProductController extends Controller
         return view('products.index', compact('products', 'categories'));
     }
 
+    public function create(){
+        $categories = Category::all();
+        return view('products.create',compact('categories'));
+    }
+    public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'quantity' => 'nullable|integer|min:0',
+        'image' => 'nullable|url',
+        'categories' => 'nullable|array',
+        'categories.*' => 'exists:categories,id'
+    ]);
+
+    // Create the product
+    $product = Product::create([
+        'name' => $validated['name'],
+        'description' => $validated['description'],
+        'price' => $validated['price'],
+        'stock' => $validated['stock'],
+        'quantity' => $validated['quantity'],
+        'image' => $validated['image']
+
+    ]);
+    
+    // Attach categories (many-to-many)
+    if ($request->has('categories')) {
+        $product->categories()->attach($request->categories);
+    }
+
+    return redirect()->route('products.index')
+        ->with('success', 'Product created successfully!');
+}
+
     public function show(Product $product)
     {
         // Load categories relationship

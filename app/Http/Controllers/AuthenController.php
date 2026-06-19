@@ -46,7 +46,11 @@ class AuthenController extends Controller
         if($validated){
             if(Auth::attempt($validated)){
                 $request->session()->regenerate();
-                return redirect('dashboard');
+                if(auth()->user()->role == 'admin'){
+                    return redirect('dashboard');
+                }
+                return redirect('/');
+                
             }
         }
         return back()->withErrors([

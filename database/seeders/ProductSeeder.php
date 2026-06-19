@@ -236,7 +236,7 @@ class ProductSeeder extends Seeder
                 'stock' => 22,
                 'quantity' => 22,
                 'image' => 'https://picsum.photos/id/23/400/300',
-                'categories' => ['Home & Garden', 'Food & Beverage']
+                'categories' => ['Home', 'Food']
             ],
         ];
 
@@ -255,16 +255,6 @@ class ProductSeeder extends Seeder
                 $category = $categories->firstWhere('name', $catName);
                 if ($category) {
                     $categoryIds[] = $category->id;
-                } else {
-                    // Create category if it doesn't exist
-                    $newCategory = Category::create([
-                        'name' => $catName,
-                        'slug' => Str::slug($catName),
-                        'description' => 'Auto-generated category',
-                        'icon' => '🏷️'
-                    ]);
-                    $categoryIds[] = $newCategory->id;
-                    $this->command->warn("Created new category: {$catName}");
                 }
             }
             

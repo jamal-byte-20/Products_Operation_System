@@ -1,96 +1,437 @@
+{{-- resources/views/dashboard.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Dashboard | StockOps')
 
 @section('content')
-<div class="space-y-8">
-    <!-- Header -->
-    <div>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Welcome back, {{ auth()->user()->name }}!</h1>
-        <p class="mt-1 text-sm text-slate-500 font-medium">Here is an overview of your operation statistics.</p>
-    </div>
-
-    <!-- Stats Cards Grid -->
-    <div class="grid gap-6 sm:grid-cols-3">
-        <!-- Users Card -->
-        <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
-            <div class="flex items-center gap-4">
-                <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0110.089 20.08c-2.114 0-4.084-.567-5.777-1.558a11.35 11.35 0 01-1.39-1.049A4.125 4.125 0 0110 12.06c1.171 0 2.261.279 3.228.78M15 10.028a3.3 3.3 0 001.954-3.078 3.3 3.3 0 00-3.3-3.3M9 10.028a3.3 3.3 0 01-3.3-3.3M9 10.028a3.3 3.3 0 003.3 3.3m0 0a3.3 3.3 0 003.3-3.3M9 10.028v-.002" />
-                    </svg>
-                </span>
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Users</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-0.5">{{ $users }}</p>
-                </div>
+<div class="dashboard-page">
+    <div class="page-container">
+        
+        {{-- Header Section --}}
+        <div class="page-header">
+            <div class="header-left">
+                <span class="system-status"><span class="status-dot"></span> System Operational</span>
+                <h1 class="page-title">Welcome back, {{ auth()->user()->name }}</h1>
+                <p class="page-subtitle">Overview of your system operation statistics.</p>
             </div>
-            <div class="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-sky-400"></div>
         </div>
 
-        <!-- Products Card -->
-        <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
-            <div class="flex items-center gap-4">
-                <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                    </svg>
-                </span>
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Products</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-0.5">{{ $products }}</p>
+        {{-- Core Metrics Stats Grid --}}
+        <div class="stats-grid">
+            <!-- Users Card -->
+            <div class="stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Total Users</span>
+                    <span class="stat-number">{{ $users }}</span>
                 </div>
+                <div class="stat-footer">Active system accounts</div>
             </div>
-            <div class="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-400"></div>
+
+            <!-- Products Card -->
+            <div class="stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Total Products</span>
+                    <span class="stat-number">{{ $products }}</span>
+                </div>
+                <div class="stat-footer">Items in catalog database</div>
+            </div>
+
+            <!-- Orders Card -->
+            <div class="stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Total Orders</span>
+                    <span class="stat-number">{{ $orders }}</span>
+                </div>
+                <div class="stat-footer">Processed via system operations</div>
+            </div>
         </div>
 
-        <!-- Orders Card -->
-        <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
-            <div class="flex items-center gap-4">
-                <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.893l.895 12c.076 1.02-.746 1.893-1.77 1.893H5.304c-1.025 0-1.846-.872-1.77-1.893l.895-12c.069-.933.84-1.645 1.777-1.645h11.954c.938 0 1.708.712 1.777 1.645z" />
-                    </svg>
-                </span>
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Orders</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-0.5">{{ $orders }}</p>
+        {{-- Analytical Graphics Split Section --}}
+        <div class="analytics-split">
+            
+            <!-- Graphic 1: Inventory Health Ring -->
+            <div class="analytics-card text-center">
+                <div class="card-header">
+                    <h3 class="analytics-title">Inventory Health</h3>
+                    <p class="analytics-subtitle">Stock capacity status</p>
                 </div>
-            </div>
-            <div class="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
-        </div>
-    </div>
-
-    <!-- Quick Shortcuts / Actions Section -->
-    <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
-        <h2 class="text-lg font-bold text-slate-900 mb-4">Quick Actions</h2>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <a href="{{ route('products.index') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 p-4 transition hover:border-indigo-500 hover:bg-slate-50/50">
-                <div class="flex items-center gap-3">
-                    <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition group-hover:bg-indigo-50 group-hover:text-indigo-650">
-                        >
-                    </span>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-900">View Products List</p>
-                        <p class="text-xs text-slate-400 font-medium">Browse and search products</p>
+                
+                <div class="radial-graphic-container">
+                    <svg class="radial-svg" viewBox="0 0 128 128">
+                        <circle cx="64" cy="64" r="52" stroke="#f1f3f5" stroke-width="10" fill="transparent" />
+                        <circle cx="64" cy="64" r="52" stroke="#28a745" stroke-width="10" fill="transparent" 
+                                stroke-dasharray="326" stroke-dashoffset="{{ 326 - (326 * 78) / 100 }}" stroke-linecap="round" />
+                    </svg>
+                    <div class="radial-label">
+                        <span class="radial-number">78%</span>
+                        <span class="radial-text">Optimal</span>
                     </div>
                 </div>
-                >
-            </a>
 
-            <a href="{{ route('products.create') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 p-4 transition hover:border-indigo-500 hover:bg-slate-50/50">
-                <div class="flex items-center gap-3">
-                    <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition group-hover:bg-indigo-50 group-hover:text-indigo-650">
-                        >
-                    </span>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-900">Add New Product</p>
-                        <p class="text-xs text-slate-400 font-medium">Create a new product listing</p>
+                <div class="card-meta-footer">
+                    <span>Status: <strong style="color: #28a745;">Stable</strong></span>
+                </div>
+            </div>
+
+            <!-- Graphic 2: Pure HTML/CSS Proportion Bar Chart -->
+            <div class="analytics-card">
+                <div class="card-header">
+                    <h3 class="analytics-title">Operational Distribution</h3>
+                    <p class="analytics-subtitle">Relative scale of database entries</p>
+                </div>
+
+                <div class="bar-chart-container">
+                    @php
+                        $max = max($users, $products, $orders, 1);
+                        $usersPct = ($users / $max) * 100;
+                        $productsPct = ($products / $max) * 100;
+                        $ordersPct = ($orders / $max) * 100;
+                    @endphp
+                    
+                    <!-- Bar 1 -->
+                    <div class="chart-row">
+                        <div class="row-info">
+                            <span>System Users</span>
+                            <strong>{{ $users }}</strong>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: {{ $usersPct }}%; background-color: #6c757d;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Bar 2 -->
+                    <div class="chart-row">
+                        <div class="row-info">
+                            <span>Active Products</span>
+                            <strong>{{ $products }}</strong>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: {{ $productsPct }}%; background-color: #333;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Bar 3 -->
+                    <div class="chart-row">
+                        <div class="row-info">
+                            <span>Fulfillment Orders</span>
+                            <strong>{{ $orders }}</strong>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: {{ $ordersPct }}%; background-color: #28a745;"></div>
+                        </div>
                     </div>
                 </div>
-                >
-            </a>
+
+                <div class="card-meta-footer">
+                    <span style="font-size: 0.75rem; color: #868e96;">Values scale automatically based on record metrics.</span>
+                </div>
+            </div>
+
         </div>
+
+        {{-- Shortcuts Action Panel Layout --}}
+        <div class="shortcuts-section">
+            <h2 class="shortcuts-title">Quick Actions</h2>
+            <div class="shortcuts-grid">
+                
+                <a href="{{ route('products.index') }}" class="shortcut-button">
+                    <div class="shortcut-content">
+                        <span class="shortcut-heading">View Products List</span>
+                        <span class="shortcut-desc">Browse and search inventory rows</span>
+                    </div>
+                    <span class="shortcut-arrow">→</span>
+                </a>
+
+                <a href="{{ route('products.create') }}" class="shortcut-button">
+                    <div class="shortcut-content">
+                        <span class="shortcut-heading">Add New Product</span>
+                        <span class="shortcut-desc">Create a dynamic entry link</span>
+                    </div>
+                    <span class="shortcut-arrow">→</span>
+                </a>
+
+            </div>
+        </div>
+
     </div>
 </div>
+
+<style>
+    /* ========== CLEAN HOME & VIEW DESIGN STANDARD SYSTEM ========== */
+    .dashboard-page {
+        background-color: #fdfdfd;
+        min-height: 100vh;
+        font-family: system-ui, sans-serif;
+        color: #333;
+        padding: 2rem 0;
+    }
+
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* ========== HEADER SECTION ========== */
+    .page-header {
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .system-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .status-dot {
+        height: 6px;
+        width: 6px;
+        background-color: #28a745;
+        border-radius: 50%;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #222;
+        margin: 0;
+    }
+
+    .page-subtitle {
+        font-size: 0.95rem;
+        color: #6c757d;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* ========== METRICS CARD GRID ========== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        display: block;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #222;
+        display: block;
+        margin-top: 0.25rem;
+    }
+
+    .stat-footer {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #868e96;
+        border-top: 1px solid #f1f3f5;
+        padding-top: 0.75rem;
+    }
+
+    /* ========== VISUAL ANALYTICS LAYOUT SLIT ========== */
+    .analytics-split {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .analytics-split {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .analytics-card {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .analytics-title {
+        font-size: 1.1rem;
+        color: #222;
+        margin: 0;
+    }
+
+    .analytics-subtitle {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Radial Circle Graphics Container */
+    .radial-graphic-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2rem auto;
+        width: 128px;
+        height: 128px;
+    }
+
+    .radial-svg {
+        transform: rotate(-90deg);
+        width: 100%;
+        height: 100%;
+    }
+
+    .radial-label {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .radial-number {
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: #222;
+    }
+
+    .radial-text {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        color: #868e96;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+    /* Bar Charts Container CSS */
+    .bar-chart-container {
+        padding: 1.5rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .chart-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .row-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #495057;
+    }
+
+    .bar-track {
+        background-color: #f1f3f5;
+        height: 10px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+
+    .card-meta-footer {
+        border-top: 1px solid #e9ecef;
+        padding-top: 0.75rem;
+        font-size: 0.8rem;
+        color: #495057;
+        text-align: left;
+    }
+
+    /* ========== MANAGEMENT ACTION PANELS ========== */
+    .shortcuts-section {
+        border-top: 1px solid #e9ecef;
+        padding-top: 2rem;
+    }
+
+    .shortcuts-title {
+        font-size: 1.25rem;
+        color: #222;
+        margin-bottom: 1.25rem;
+    }
+
+    .shortcuts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .shortcut-button {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.25rem;
+        text-decoration: none;
+        transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .shortcut-button:hover {
+        border-color: #333;
+        background-color: #f8f9fa;
+    }
+
+    .shortcut-heading {
+        font-size: 0.95rem;
+        font-weight: bold;
+        color: #333;
+        display: block;
+    }
+
+    .shortcut-desc {
+        font-size: 0.8rem;
+        color: #6c757d;
+        display: block;
+        margin-top: 0.2rem;
+    }
+
+    .shortcut-arrow {
+        color: #adb5bd;
+        font-size: 1.1rem;
+        transition: transform 0.2s;
+    }
+
+    .shortcut-button:hover .shortcut-arrow {
+        color: #333;
+        transform: translateX(4px);
+    }
+</style>
 @endsection
